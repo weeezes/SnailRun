@@ -42,6 +42,6 @@ GameScene.prototype.draw = function(display) {
     this.bombDropper.draw(display);
 };
 
-gamejs.preload(['./images/snail.png', './images/background.png', './images/bomb.png']);
+gamejs.preload(['./images/background.png']);
 
 exports.GameScene = GameScene;

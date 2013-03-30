@@ -1,10 +1,18 @@
 var gamejs = require('gamejs');
 var input = require('./input');
 
+var SpriteSheet = require('./animation').SpriteSheet;
+var Animation = require('./animation').Animation;
+
 var Snail = function(input, startPosition) {
     Snail.superConstructor.apply(this, arguments);
-    this.image = gamejs.image.load('./images/snail.png');
 
+    var imageDimensions = {width: 44, height: 24};
+    var spriteSheet = new SpriteSheet('./images/snail.png', imageDimensions);
+    this.anim = new Animation(spriteSheet, {'stand': [0], 'walk': [0,1]});
+    this.anim.start('stand');
+    this.image = this.anim.update(1);
+    
     this.rect = this.image.getRect();
     this.rect.bottomleft = startPosition;
     
@@ -19,16 +27,18 @@ var Snail = function(input, startPosition) {
 gamejs.utils.objects.extend(Snail, gamejs.sprite.Sprite);
 
 Snail.prototype.turnSide = function(goingLeft) {
-    if (this.goingLeft === goingLeft) {
+    if (!goingLeft) {
         this.image = gamejs.transform.flip(this.image, true, false);
-        this.goingLeft = !this.goingLeft;
     }
 };
 
 Snail.prototype.update = function(msDuration) {
     if (this.input.left) {
-        this.turnSide(false);
-    
+        if (this.anim.currentAnimation != 'walk') {
+            this.anim.start('walk');
+        }
+        this.goingLeft = true;
+        
         if (this.rect.topleft[0] >= 0) {
             this.rect.moveIp(-msDuration*this.speed/1000.0, 0);
         } else {
@@ -37,7 +47,10 @@ Snail.prototype.update = function(msDuration) {
     }
     else if (this.input.right)
     {
-        this.turnSide(true);
+        if (this.anim.currentAnimation != 'walk') {
+            this.anim.start('walk');
+        }
+        this.goingLeft = false;
         
         if (this.rect.topright[0] <= gamejs.display.getSurface().getSize()[0]) {
             this.rect.moveIp(msDuration*this.speed/1000.0, 0);
@@ -45,6 +58,15 @@ Snail.prototype.update = function(msDuration) {
             this.rect.topright[0] = gamejs.display.getSurface().getSize()[0];
         }
     }
+    else {
+        this.anim.start('stand');
+    }
+    
+    this.image = this.anim.update(msDuration);
+    this.turnSide(this.goingLeft);
+    
 };
 
 exports.Snail = Snail;
+
+gamejs.preload(['./images/snail.png']);

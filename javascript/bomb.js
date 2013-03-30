@@ -27,3 +27,5 @@ Bomb.prototype.update = function(msDuration) {
 };
 
 exports.Bomb = Bomb;
+
+gamejs.preload(['./images/bomb.png']);
