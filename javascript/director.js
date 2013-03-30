@@ -7,7 +7,7 @@ var Director = function(width, height) {
     this.width = width;
     this.height = height;
     
-    this.display = gamejs.display.setMode([this.width, this.height]);
+    this.display = gamejs.display.setMode([this.width, this.height], gamejs.display.DISABLE_SMOOTHING);
     
     gamejs.time.fpsCallback(this.tick, this, 60);
     
